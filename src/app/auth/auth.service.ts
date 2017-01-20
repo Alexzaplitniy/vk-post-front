@@ -22,6 +22,19 @@ export class AuthService implements CanActivate {
     if (token) {
       this.setJwt(token);
     }
+
+    const cred = {
+      'username': 'alex@mail.ru',
+      'password': 'alex@mail.ru',
+      'grant_type': 'password',
+      'client_id': '11',
+      'client_secret': '2IirYIUE41VPUMq2lcZ5XnJKFGNTIwEgg5huNa88',
+      'scope': ''
+    };
+
+    this.authenticate('http://vk-post/oauth/token', cred).subscribe((res) => {
+      console.log(res)
+    });
   }
 
   setJwt(jwt: string) {
@@ -52,6 +65,11 @@ export class AuthService implements CanActivate {
   }
 
   authenticate(path, credits): Observable<any> {
-    return this.http.post(path, credits);
+    return this.http.post(path, credits, {headers: this.headers})
+      .do((res: any) => this.setJwt(res))
+      .map((res: any) => {
+        console.log(res);
+        return res.data;
+      });
   }
 }
